@@ -128,11 +128,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .has-js [data-rv="up"]{transform:translate3d(0,32px,0)}
 .has-js [data-rv="fade"]{transform:none}
 .has-js [data-rv="zoom"]{transform:scale(1.06)}
-.has-js [data-rv="mask"]{clip-path:inset(0 0 100% 0)}
 .has-js [data-rv="line"]{transform:scaleX(0);transform-origin:0 50%;opacity:1}
 .has-js [data-rv].is-in{
-  opacity:1;transform:none;clip-path:inset(0 0 0 0);
-  transition:opacity .9s var(--ease),transform 1.1s var(--ease),clip-path 1.15s var(--ease);
+  opacity:1;transform:none;
+  transition:opacity .9s var(--ease),transform 1.1s var(--ease);
 }
 .has-js [data-rv="line"].is-in{transition:transform 1.1s var(--ease) .1s}
 .reduce-motion [data-rv],.no-js [data-rv]{opacity:1!important;transform:none!important;clip-path:none!important;transition:none!important}
@@ -183,9 +182,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* 键盘可达：可放大的图必须能 Tab 到，并且有可见焦点环 */
 [data-zoom]{cursor:zoom-in}
 [data-zoom]:focus-visible{outline:2px solid var(--red);outline-offset:3px}
-.figure--static{cursor:zoom-in;background:var(--paper-2);display:flex;justify-content:center;padding:0}
-.figure--static img{filter:none!important;transform:none!important;width:auto;height:auto;
-  max-width:100%;max-height:68vh;object-fit:contain;margin:0 auto}
+/* 详情页封面区：两栏（左图右文）。竖构图长图按高度收缩后，
+   右侧真的放一段说明，而不是留下几百像素的空白带。 */
+.cover{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
+  gap:clamp(24px,4vw,64px);align-items:center;margin-top:clamp(20px,3vw,36px)}
+.cover--solo{grid-template-columns:minmax(0,1fr);justify-items:center}
+.cover__fig{display:flex;justify-content:center}
+.cover__note{display:flex;flex-direction:column;gap:14px}
+.cover__note h3{font-family:var(--serif);font-weight:400;font-size:clamp(19px,2.1vw,28px);margin:0;line-height:1.45}
+.cover__note p{margin:0;font-size:14px;line-height:1.9;color:var(--ink-3)}
+.cover__facts{margin:0;border-top:var(--hair) solid var(--line)}
+.cover__facts div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:var(--hair) solid var(--line)}
+.cover__facts dt{font-size:11px;letter-spacing:.16em;color:var(--ink-4);text-transform:uppercase}
+.cover__facts dd{margin:0;font-size:13px;text-align:right}
+@media (max-width:860px){
+  .cover{grid-template-columns:minmax(0,1fr)}
+}
+/* 封面图：不参与「揭示」动画（视口边缘外时观察器可能不触发）。
+   关键：figure 收缩到图片实际宽度（width:fit-content），否则竖构图长图
+   按高度收缩后，容器仍占满整栏，两侧留下几百像素的空纸色带。 */
+.figure--static{cursor:zoom-in;background:var(--paper-2);padding:0;
+  width:fit-content;max-width:100%;margin:0;overflow:hidden}
+.figure--static img{filter:none!important;transform:none!important;display:block;
+  width:auto;height:auto;max-width:100%;max-height:74vh;object-fit:contain}
 
 /* ---------------------------------------------------------- 首屏 Hero */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:96px;position:relative;overflow:hidden}
@@ -506,9 +525,24 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   </div>
 </div>
 <div class="wrap">
-  <a class="figure figure--static" data-zoom="img/packaging-design-40075cc4.jpg" data-cap="包装设计与物料延展" style="cursor:zoom-in">
-    <img src="img/packaging-design-40075cc4.jpg" alt="包装设计与物料延展 · 封面">
-  </a>
+  <div class="cover">
+    <div class="cover__fig">
+      <a class="figure figure--static" data-zoom="img/packaging-design-40075cc4.jpg" data-cap="包装设计与物料延展"
+         role="button" tabindex="0" aria-label="放大查看封面：包装设计与物料延展">
+        <img src="img/packaging-design-40075cc4.jpg" alt="包装设计与物料延展 · 封面">
+      </a>
+    </div>
+    <div class="cover__note">
+      <div class="kicker" data-rv="fade">封面</div>
+      <h3 data-rv="up">同一个图形语言换到袋、杯、盒、红包、胶带上还认不认得出是同一家——这一组练的是「一套系统铺满货架」。</h3>
+      <dl class="cover__facts" data-rv="up" data-rv-d="140">
+        <div><dt>角色</dt><dd>独立完成 · 平面 / 结构 / 效果图</dd></div>
+        <div><dt>时间</dt><dd>2026</dd></div>
+        <div><dt>图片</dt><dd>4 张 · 点图放大</dd></div>
+      </dl>
+      <span class="dim" style="font-size:12px">点图，或 Tab 选中后按 Enter 放大；ESC 退出</span>
+    </div>
+  </div>
 </div>
 <div class="wrap"><section class="sec-block" data-sec="overview">
   <div class="sec-block__hd">
@@ -593,7 +627,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
   </div>
 </footer>
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="图片放大">
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="图片放大" aria-hidden="true" hidden>
   <button class="lb__x" type="button" data-lb-close>关闭 ESC</button>
   <img alt="" id="lb-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
   <div class="lb__cap" id="lb-cap"></div>
@@ -611,7 +645,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   var easeOut = "cubic-bezier(.22,1,.36,1)";
 
   /* ------------------------------------------------------------ reveal 组 */
-  // data-rv="up|mask|fade|zoom|clip|chars|line"  data-rv-d="延迟ms"
+  // data-rv="up|fade|zoom|line"  data-rv-d="延迟ms"
+  // （"mask"(clip-path) 那种写法已移除：元素自身相交面积会被压成 0，
+  //   而 IntersectionObserver 永远判它未相交 → 自锁死循环，永久不显示。）
   function initReveal(root) {
     var nodes = root.querySelectorAll("[data-rv]:not(.is-in)");
     if (!nodes.length) return;
@@ -974,6 +1010,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   function initLightbox(root) {
     var lb = document.getElementById("lb");
     if (!lb) return;
+    // 静态标记里带 hidden：无 JS 时它是彻底隐藏的（否则不可见的「关闭 ESC」
+    // 仍留在 Tab 序列里，读屏软件也会读到一个幽灵对话框）。
+    lb.hidden = false;
     var img = document.getElementById("lb-img");
     var cap = document.getElementById("lb-cap");
     var closeBtn = lb.querySelector("[data-lb-close]");
