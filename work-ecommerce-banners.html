@@ -115,9 +115,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .cur,.cur-dot{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;
     transition:opacity .3s linear}
   .cur{width:34px;height:34px;margin:-17px 0 0 -17px;border:var(--hair) solid var(--ink-3);
-    mix-blend-mode:normal;transition:opacity .3s linear,border-color .3s linear,background .3s linear}
+    opacity:0;transition:opacity .3s linear,border-color .3s linear,background .3s linear}
   .cur.is-hot{border-color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
-  .cur-dot{width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ink)}
+  .cur-dot{width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ink);opacity:0}
+  .cur.is-on,.cur-dot.is-on{opacity:1}
   .has-cursor a,.has-cursor button,.has-cursor .wcard{cursor:none}
 }
 
@@ -147,11 +148,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* 图片揭示 */
 .figure{position:relative;overflow:hidden;background:var(--paper-2);margin:0}
+/* 图片揭示：初始模糊态必须 gated 在 .has-js 下 ——
+   否则关掉 JS 时 .is-in 永远不会加，图片就永久停在 blur(14px)（21 张全糊）。 */
 .figure img{
   width:100%;height:auto;display:block;
-  filter:blur(14px);transform:scale(1.045);
   transition:filter 1.15s var(--ease),transform 1.4s var(--ease);
 }
+.has-js .figure img{filter:blur(14px);transform:scale(1.045)}
 /* 注意：画廊里 .figure 的父元素是 <figure class="gitem" data-rv>，
    所以 .is-in 落在 .gitem 上而不是 .figure 上——两条选择器都要写，
    否则图片会永远停在 blur(14px) 的半成品态。 */
@@ -177,9 +180,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .figure--plain figcaption{position:static;background:none;opacity:1;transform:none;padding:10px 0 0}
 /* 封面图：不裁切、按图片本身比例显示，且不参与「揭示」动画
    —— 详情页首图如果在视口边缘外，揭示观察器可能不触发，会留下模糊/裁切的半成品状态。 */
-.figure--static{background:var(--paper-2);display:flex;justify-content:center;padding:0}
+/* 键盘可达：可放大的图必须能 Tab 到，并且有可见焦点环 */
+[data-zoom]{cursor:zoom-in}
+[data-zoom]:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.figure--static{cursor:zoom-in;background:var(--paper-2);display:flex;justify-content:center;padding:0}
 .figure--static img{filter:none!important;transform:none!important;width:auto;height:auto;
-  max-width:100%;max-height:80vh;object-fit:contain;margin:0 auto}
+  max-width:100%;max-height:68vh;object-fit:contain;margin:0 auto}
 
 /* ---------------------------------------------------------- 首屏 Hero */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:96px;position:relative;overflow:hidden}
@@ -527,25 +533,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <p class="sec-block__body" data-rv="up" data-rv-d="100" style="margin-top:14px">图片按素材目录原样呈现，未做删减；点击可放大。</p></div>
   </div>
   <div class="gal gal--3"><figure class="gitem" data-rv="up" data-rv-d="0">
-      <div class="figure" data-zoom="img/ecommerce-banners-ffeca7e5.jpg" data-cap="(1).png">
-        <img src="img/ecommerce-banners-ffeca7e5.jpg" loading="lazy" alt="(1).png 图 1">
+      <div class="figure" data-zoom="img/ecommerce-banners-ffeca7e5.jpg" data-cap="五一特惠 · 满减促销主图：价格顶到第一眼，品牌名降级"
+           role="button" tabindex="0" aria-label="放大查看：五一特惠 · 满减促销主图：价格顶到第一眼，品牌名降级">
+        <img src="img/ecommerce-banners-ffeca7e5.jpg" loading="lazy" alt="五一特惠 · 满减促销主图：价格顶到第一眼，品牌名降级 图 1">
       </div>
-      <figcaption>(1).png</figcaption>
+      <figcaption>五一特惠 · 满减促销主图：价格顶到第一眼，品牌名降级</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="50">
-      <div class="figure" data-zoom="img/ecommerce-banners-4152006c.jpg" data-cap="(2).png">
-        <img src="img/ecommerce-banners-4152006c.jpg" loading="lazy" alt="(2).png 图 2">
+      <div class="figure" data-zoom="img/ecommerce-banners-4152006c.jpg" data-cap="鲜果派对 · 生鲜引流主图：商品图占满右半，价格做成胶囊标签"
+           role="button" tabindex="0" aria-label="放大查看：鲜果派对 · 生鲜引流主图：商品图占满右半，价格做成胶囊标签">
+        <img src="img/ecommerce-banners-4152006c.jpg" loading="lazy" alt="鲜果派对 · 生鲜引流主图：商品图占满右半，价格做成胶囊标签 图 2">
       </div>
-      <figcaption>(2).png</figcaption>
+      <figcaption>鲜果派对 · 生鲜引流主图：商品图占满右半，价格做成胶囊标签</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="100">
-      <div class="figure" data-zoom="img/ecommerce-banners-1e405d1b.jpg" data-cap="披萨.png">
-        <img src="img/ecommerce-banners-1e405d1b.jpg" loading="lazy" alt="披萨.png 图 3">
+      <div class="figure" data-zoom="img/ecommerce-banners-1e405d1b.jpg" data-cap="披萨外卖 · 餐饮促销横幅：红底食物特写 +「30 分钟送达」徽章"
+           role="button" tabindex="0" aria-label="放大查看：披萨外卖 · 餐饮促销横幅：红底食物特写 +「30 分钟送达」徽章">
+        <img src="img/ecommerce-banners-1e405d1b.jpg" loading="lazy" alt="披萨外卖 · 餐饮促销横幅：红底食物特写 +「30 分钟送达」徽章 图 3">
       </div>
-      <figcaption>披萨.png</figcaption>
+      <figcaption>披萨外卖 · 餐饮促销横幅：红底食物特写 +「30 分钟送达」徽章</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="150">
-      <div class="figure" data-zoom="img/ecommerce-banners-bf300caf.jpg" data-cap="招聘.png">
-        <img src="img/ecommerce-banners-bf300caf.jpg" loading="lazy" alt="招聘.png 图 4">
+      <div class="figure" data-zoom="img/ecommerce-banners-bf300caf.jpg" data-cap="全咖召集令 · 招聘长图：岗位 / 要求 / 待遇 / 联系分块固定浏览路径"
+           role="button" tabindex="0" aria-label="放大查看：全咖召集令 · 招聘长图：岗位 / 要求 / 待遇 / 联系分块固定浏览路径">
+        <img src="img/ecommerce-banners-bf300caf.jpg" loading="lazy" alt="全咖召集令 · 招聘长图：岗位 / 要求 / 待遇 / 联系分块固定浏览路径 图 4">
       </div>
-      <figcaption>招聘.png</figcaption>
+      <figcaption>全咖召集令 · 招聘长图：岗位 / 要求 / 待遇 / 联系分块固定浏览路径</figcaption>
     </figure></div>
 </section></div>
 <div class="wrap"><div class="note note--warn" data-rv="up">
@@ -883,11 +893,23 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       rx = mx,
       ry = my,
       scale = 1,
-      target = 1;
+      target = 1,
+      shown = false;
+
+    // 首帧同步：不然光标会先停在视口正中压住文字，直到用户动鼠标才归位
+    ring.style.transform = "translate3d(" + rx + "px," + ry + "px,0)";
+    dot.style.transform = "translate3d(" + mx + "px," + my + "px,0)";
 
     window.addEventListener("pointermove", function (e) {
       mx = e.clientX;
       my = e.clientY;
+      if (!shown) {
+        shown = true;
+        rx = mx;
+        ry = my;
+        ring.classList.add("is-on");
+        dot.classList.add("is-on");
+      }
       var t = e.target;
       var hot =
         t &&
@@ -948,7 +970,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   }
 
   /* ---------------------------------------------------------- 图片灯箱 */
-  // [data-zoom] 点击放大；ESC / 点背景 / 点关闭按钮退出
+  // [data-zoom] 点击/回车放大；ESC / 点背景 / 点关闭按钮退出；打开时锁滚动
   function initLightbox(root) {
     var lb = document.getElementById("lb");
     if (!lb) return;
@@ -956,34 +978,92 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     var cap = document.getElementById("lb-cap");
     var closeBtn = lb.querySelector("[data-lb-close]");
     var lastFocus = null;
+    var prevOverflow = "";
 
-    function open(src, text) {
-      lastFocus = document.activeElement;
-      if (img) img.src = src;
+    // 关闭态必须真正移出可访问性树：否则那个「关闭 ESC」按钮仍在 Tab 序列里，
+    // 键盘用户会停在一个看不见的按钮上。
+    lb.setAttribute("aria-hidden", "true");
+    if ("inert" in lb) lb.inert = true;
+
+    function focusables() {
+      return [].slice.call(
+        lb.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')
+      );
+    }
+
+    function open(src, text, trigger) {
+      lastFocus = trigger || document.activeElement;
+      if (img) {
+        img.src = src;
+        img.alt = text || "";
+      }
       if (cap) cap.textContent = text || "";
       lb.classList.add("is-on");
+      lb.setAttribute("aria-hidden", "false");
+      if ("inert" in lb) lb.inert = false;
+      prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden"; // 锁滚动：灯箱后面不该跟着滚
       if (closeBtn) closeBtn.focus();
     }
+
     function close() {
       lb.classList.remove("is-on");
-      if (lastFocus && lastFocus.focus) lastFocus.focus();
+      lb.setAttribute("aria-hidden", "true");
+      if ("inert" in lb) lb.inert = true;
+      document.body.style.overflow = prevOverflow;
+      // 归还焦点：优先还给触发它的那张图（现在它们都是可聚焦的）
+      if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
     }
 
-    root.addEventListener("click", function (e) {
+    function onClick(e) {
       var trigger = e.target.closest && e.target.closest("[data-zoom]");
-      if (trigger) {
+      if (trigger && !lb.classList.contains("is-on")) {
         e.preventDefault();
-        open(trigger.getAttribute("data-zoom"), trigger.getAttribute("data-cap"));
+        open(trigger.getAttribute("data-zoom"), trigger.getAttribute("data-cap"), trigger);
         return;
       }
-      if (lb.classList.contains("is-on") && e.target.closest && e.target.closest("#lb")) {
-        // 点背景或关闭按钮都退出
-        if (e.target === lb || e.target.closest("[data-lb-close]")) close();
+      if (lb.classList.contains("is-on")) {
+        if (e.target === lb || (e.target.closest && e.target.closest("[data-lb-close]"))) close();
       }
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && lb.classList.contains("is-on")) close();
-    });
+    }
+
+    function onKey(e) {
+      if (!lb.classList.contains("is-on")) {
+        // 关闭态下 Enter/空格 作用在可聚焦的图上 = 打开
+        if ((e.key === "Enter" || e.key === " ") && e.target.closest) {
+          var t = e.target.closest("[data-zoom]");
+          if (t) {
+            e.preventDefault();
+            open(t.getAttribute("data-zoom"), t.getAttribute("data-cap"), t);
+          }
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
+      // 焦点陷阱：Tab 只在灯箱内部循环
+      if (e.key === "Tab") {
+        var f = focusables();
+        if (!f.length) return;
+        var first = f[0];
+        var last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (!lb.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    root.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKey);
   }
 
   /* ------------------------------------------------------ 主循环（单 RAF） */

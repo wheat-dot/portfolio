@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>三维渲染场景与产品 · 吴豪 · 作品集</title>
-<meta name="description" content="两组室内场景 + 一台嵌入式烤箱，共八张：彩色成图与白模一一对照。">
+<meta name="description" content="四组两两对照、共八张：室内客厅与书架两组 + 台面小型烤箱与笔记本场景，每组都配一版白模。">
 <meta name="author" content="吴豪">
 <meta name="theme-color" content="#EFEAE0">
 <meta property="og:type" content="website">
 <meta property="og:title" content="三维渲染场景与产品 · 吴豪 · 作品集">
-<meta property="og:description" content="两组室内场景 + 一台嵌入式烤箱，共八张：彩色成图与白模一一对照。">
+<meta property="og:description" content="四组两两对照、共八张：室内客厅与书架两组 + 台面小型烤箱与笔记本场景，每组都配一版白模。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20fill%3D%22%23EFEAE0%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2245%22%20font-size%3D%2238%22%20font-family%3D%22Songti%20SC%2CSimSun%2Cserif%22%20text-anchor%3D%22middle%22%20fill%3D%22%23151310%22%3E%E5%90%B4%3C%2Ftext%3E%3C%2Fsvg%3E">
 <script>document.documentElement.classList.add('has-js');</script>
 <style>
@@ -115,9 +115,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .cur,.cur-dot{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;border-radius:50%;
     transition:opacity .3s linear}
   .cur{width:34px;height:34px;margin:-17px 0 0 -17px;border:var(--hair) solid var(--ink-3);
-    mix-blend-mode:normal;transition:opacity .3s linear,border-color .3s linear,background .3s linear}
+    opacity:0;transition:opacity .3s linear,border-color .3s linear,background .3s linear}
   .cur.is-hot{border-color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
-  .cur-dot{width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ink)}
+  .cur-dot{width:4px;height:4px;margin:-2px 0 0 -2px;background:var(--ink);opacity:0}
+  .cur.is-on,.cur-dot.is-on{opacity:1}
   .has-cursor a,.has-cursor button,.has-cursor .wcard{cursor:none}
 }
 
@@ -147,11 +148,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* 图片揭示 */
 .figure{position:relative;overflow:hidden;background:var(--paper-2);margin:0}
+/* 图片揭示：初始模糊态必须 gated 在 .has-js 下 ——
+   否则关掉 JS 时 .is-in 永远不会加，图片就永久停在 blur(14px)（21 张全糊）。 */
 .figure img{
   width:100%;height:auto;display:block;
-  filter:blur(14px);transform:scale(1.045);
   transition:filter 1.15s var(--ease),transform 1.4s var(--ease);
 }
+.has-js .figure img{filter:blur(14px);transform:scale(1.045)}
 /* 注意：画廊里 .figure 的父元素是 <figure class="gitem" data-rv>，
    所以 .is-in 落在 .gitem 上而不是 .figure 上——两条选择器都要写，
    否则图片会永远停在 blur(14px) 的半成品态。 */
@@ -177,9 +180,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .figure--plain figcaption{position:static;background:none;opacity:1;transform:none;padding:10px 0 0}
 /* 封面图：不裁切、按图片本身比例显示，且不参与「揭示」动画
    —— 详情页首图如果在视口边缘外，揭示观察器可能不触发，会留下模糊/裁切的半成品状态。 */
-.figure--static{background:var(--paper-2);display:flex;justify-content:center;padding:0}
+/* 键盘可达：可放大的图必须能 Tab 到，并且有可见焦点环 */
+[data-zoom]{cursor:zoom-in}
+[data-zoom]:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.figure--static{cursor:zoom-in;background:var(--paper-2);display:flex;justify-content:center;padding:0}
 .figure--static img{filter:none!important;transform:none!important;width:auto;height:auto;
-  max-width:100%;max-height:80vh;object-fit:contain;margin:0 auto}
+  max-width:100%;max-height:68vh;object-fit:contain;margin:0 auto}
 
 /* ---------------------------------------------------------- 首屏 Hero */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding-top:96px;position:relative;overflow:hidden}
@@ -489,7 +495,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     </div>
     <h1 class="workhd__t" data-split="chars" data-rv="fade">三维渲染场景与产品</h1>
     <div class="workhd__en" data-rv="fade" data-rv-d="200">3D RENDERS · SCENE &amp; PRODUCT</div>
-    <p class="workhd__sub" data-rv="up" data-rv-d="260">两组室内场景 + 一台嵌入式烤箱，共八张：彩色成图与白模一一对照。</p>
+    <p class="workhd__sub" data-rv="up" data-rv-d="260">四组两两对照、共八张：室内客厅与书架两组 + 台面小型烤箱与笔记本场景，每组都配一版白模。</p>
     <dl class="dl" data-rv="up" data-rv-d="320">
       <div><dt>角色</dt><dd>独立完成 · 建模 / 材质 / 灯光 / 渲染</dd></div>
       <div><dt>时间</dt><dd>2026</dd></div>
@@ -507,9 +513,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 <div class="wrap"><section class="sec-block" data-sec="overview">
   <div class="sec-block__hd">
     <div class="sec-block__no" data-rv="fade">Overview</div>
-    <h3 class="sec-block__lead" data-rv="up">两组室内场景 + 一台嵌入式烤箱，共八张：彩色成图与白模一一对照。</h3>
+    <h3 class="sec-block__lead" data-rv="up">四组两两对照、共八张：室内客厅与书架两组 + 台面小型烤箱与笔记本场景，每组都配一版白模。</h3>
   </div>
-  <p class="sec-block__body" data-rv="up" data-rv-d="80">两组等距视角室内场景（客厅 / 书架沙发）与一台嵌入式烤箱的渲染。每组同时给出彩色成图与白模版本，用于分离判断「造型」与「材质灯光」各自的问题。</p>
+  <p class="sec-block__body" data-rv="up" data-rv-d="80">两组等距视角室内场景（客厅 / 书架沙发）与两台台面家电场景（小型烤箱 / 笔记本）的渲染。每张成图都配一版白模，用于分离判断「造型」与「材质灯光」各自的问题。</p>
   <dl class="dl" data-rv="up" data-rv-d="140"><div><dt>图片</dt><dd>8 张</dd></div><div><dt>来源目录</dt><dd>三维设计</dd></div></dl>
   <div class="metrics" data-rv="up" data-rv-d="180"><div><b>8</b><span>渲染 张</span></div><div><b>2</b><span>场景 组</span></div></div>
 </section>
@@ -527,45 +533,53 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     <p class="sec-block__body" data-rv="up" data-rv-d="100" style="margin-top:14px">图片按素材目录原样呈现，未做删减；点击可放大。</p></div>
   </div>
   <div class="gal gal--3"><figure class="gitem" data-rv="up" data-rv-d="0">
-      <div class="figure" data-zoom="img/threed-renders-37e64581.jpg" data-cap="场景1.jpeg">
-        <img src="img/threed-renders-37e64581.jpg" loading="lazy" alt="场景1.jpeg 图 1">
+      <div class="figure" data-zoom="img/threed-renders-37e64581.jpg" data-cap="室内场景 · 客厅：暖粉墙面配绿沙发，同色系深浅拉开层次"
+           role="button" tabindex="0" aria-label="放大查看：室内场景 · 客厅：暖粉墙面配绿沙发，同色系深浅拉开层次">
+        <img src="img/threed-renders-37e64581.jpg" loading="lazy" alt="室内场景 · 客厅：暖粉墙面配绿沙发，同色系深浅拉开层次 图 1">
       </div>
-      <figcaption>场景1.jpeg</figcaption>
+      <figcaption>室内场景 · 客厅：暖粉墙面配绿沙发，同色系深浅拉开层次</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="50">
-      <div class="figure" data-zoom="img/threed-renders-391f2402.jpg" data-cap="场景2.jpeg">
-        <img src="img/threed-renders-391f2402.jpg" loading="lazy" alt="场景2.jpeg 图 2">
+      <div class="figure" data-zoom="img/threed-renders-391f2402.jpg" data-cap="室内场景 · 书架与沙发：中景书架做视觉重心，前景区用浅色家具引导"
+           role="button" tabindex="0" aria-label="放大查看：室内场景 · 书架与沙发：中景书架做视觉重心，前景区用浅色家具引导">
+        <img src="img/threed-renders-391f2402.jpg" loading="lazy" alt="室内场景 · 书架与沙发：中景书架做视觉重心，前景区用浅色家具引导 图 2">
       </div>
-      <figcaption>场景2.jpeg</figcaption>
+      <figcaption>室内场景 · 书架与沙发：中景书架做视觉重心，前景区用浅色家具引导</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="100">
-      <div class="figure" data-zoom="img/threed-renders-9fdcafc7.jpg" data-cap="场景模型1.png">
-        <img src="img/threed-renders-9fdcafc7.jpg" loading="lazy" alt="场景模型1.png 图 3">
+      <div class="figure" data-zoom="img/threed-renders-9fdcafc7.jpg" data-cap="客厅场景 · 白模：去掉材质灯光，单看家具比例与空间进深"
+           role="button" tabindex="0" aria-label="放大查看：客厅场景 · 白模：去掉材质灯光，单看家具比例与空间进深">
+        <img src="img/threed-renders-9fdcafc7.jpg" loading="lazy" alt="客厅场景 · 白模：去掉材质灯光，单看家具比例与空间进深 图 3">
       </div>
-      <figcaption>场景模型1.png</figcaption>
+      <figcaption>客厅场景 · 白模：去掉材质灯光，单看家具比例与空间进深</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="150">
-      <div class="figure" data-zoom="img/threed-renders-eea1eb5e.jpg" data-cap="微波炉.jpeg">
-        <img src="img/threed-renders-eea1eb5e.jpg" loading="lazy" alt="微波炉.jpeg 图 4">
+      <div class="figure" data-zoom="img/threed-renders-eea1eb5e.jpg" data-cap="台面小型烤箱 · 侧逆光透过百叶帘，练材质反射与硬光下的体积感"
+           role="button" tabindex="0" aria-label="放大查看：台面小型烤箱 · 侧逆光透过百叶帘，练材质反射与硬光下的体积感">
+        <img src="img/threed-renders-eea1eb5e.jpg" loading="lazy" alt="台面小型烤箱 · 侧逆光透过百叶帘，练材质反射与硬光下的体积感 图 4">
       </div>
-      <figcaption>微波炉.jpeg</figcaption>
+      <figcaption>台面小型烤箱 · 侧逆光透过百叶帘，练材质反射与硬光下的体积感</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="200">
-      <div class="figure" data-zoom="img/threed-renders-738de22e.jpg" data-cap="微波炉白膜.png">
-        <img src="img/threed-renders-738de22e.jpg" loading="lazy" alt="微波炉白膜.png 图 5">
+      <div class="figure" data-zoom="img/threed-renders-738de22e.jpg" data-cap="台面小型烤箱 · 白模：造型本身站不站得住"
+           role="button" tabindex="0" aria-label="放大查看：台面小型烤箱 · 白模：造型本身站不站得住">
+        <img src="img/threed-renders-738de22e.jpg" loading="lazy" alt="台面小型烤箱 · 白模：造型本身站不站得住 图 5">
       </div>
-      <figcaption>微波炉白膜.png</figcaption>
+      <figcaption>台面小型烤箱 · 白模：造型本身站不站得住</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="250">
-      <div class="figure" data-zoom="img/threed-renders-10820c90.jpg" data-cap="白膜场景2.png">
-        <img src="img/threed-renders-10820c90.jpg" loading="lazy" alt="白膜场景2.png 图 6">
+      <div class="figure" data-zoom="img/threed-renders-10820c90.jpg" data-cap="书架场景 · 白模：检查对称构图下两侧是否真的平衡"
+           role="button" tabindex="0" aria-label="放大查看：书架场景 · 白模：检查对称构图下两侧是否真的平衡">
+        <img src="img/threed-renders-10820c90.jpg" loading="lazy" alt="书架场景 · 白模：检查对称构图下两侧是否真的平衡 图 6">
       </div>
-      <figcaption>白膜场景2.png</figcaption>
+      <figcaption>书架场景 · 白模：检查对称构图下两侧是否真的平衡</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="300">
-      <div class="figure" data-zoom="img/threed-renders-2cff9a9e.jpg" data-cap="笔记本.png">
-        <img src="img/threed-renders-2cff9a9e.jpg" loading="lazy" alt="笔记本.png 图 7">
+      <div class="figure" data-zoom="img/threed-renders-2cff9a9e.jpg" data-cap="笔记本场景 · 屏幕是唯一高亮区，桌面刻意压暗避免抢视觉"
+           role="button" tabindex="0" aria-label="放大查看：笔记本场景 · 屏幕是唯一高亮区，桌面刻意压暗避免抢视觉">
+        <img src="img/threed-renders-2cff9a9e.jpg" loading="lazy" alt="笔记本场景 · 屏幕是唯一高亮区，桌面刻意压暗避免抢视觉 图 7">
       </div>
-      <figcaption>笔记本.png</figcaption>
+      <figcaption>笔记本场景 · 屏幕是唯一高亮区，桌面刻意压暗避免抢视觉</figcaption>
     </figure><figure class="gitem" data-rv="up" data-rv-d="300">
-      <div class="figure" data-zoom="img/threed-renders-857ce1ea.jpg" data-cap="笔记本白膜.png">
-        <img src="img/threed-renders-857ce1ea.jpg" loading="lazy" alt="笔记本白膜.png 图 8">
+      <div class="figure" data-zoom="img/threed-renders-857ce1ea.jpg" data-cap="笔记本场景 · 白模"
+           role="button" tabindex="0" aria-label="放大查看：笔记本场景 · 白模">
+        <img src="img/threed-renders-857ce1ea.jpg" loading="lazy" alt="笔记本场景 · 白模 图 8">
       </div>
-      <figcaption>笔记本白膜.png</figcaption>
+      <figcaption>笔记本场景 · 白模</figcaption>
     </figure></div>
 </section></div>
 <div class="wrap"><div class="note note--warn" data-rv="up">
@@ -574,7 +588,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <li>个人练习（非课程作业、非商业委托）</li><li>三维渲染为本人制作。若其中任一模特的原始几何来自外部模型库，需按「借用了外部模型」标注，不要写成全流程自制。</li>
       
     </ul>
-    <div class="pending">注：本组为个人三维练习，非商业委托。文件名沿用制作时的命名（「微波炉」实为嵌入式烤箱场景）。</div>
+    <div class="pending">注：本组为个人三维练习，非商业委托。文件名沿用制作时的命名（文件名叫「微波炉」，画面里是台面小型烤箱场景）。</div>
     <div class="pending" style="color:var(--red)"><b>待你确认：</b>场景里的家具 / 烤箱模型是本人建模，还是用了外部模型库（含从 CAD 图纸转模）？确认后我改成对应口径。</div>
     
   </div></div>
@@ -903,11 +917,23 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       rx = mx,
       ry = my,
       scale = 1,
-      target = 1;
+      target = 1,
+      shown = false;
+
+    // 首帧同步：不然光标会先停在视口正中压住文字，直到用户动鼠标才归位
+    ring.style.transform = "translate3d(" + rx + "px," + ry + "px,0)";
+    dot.style.transform = "translate3d(" + mx + "px," + my + "px,0)";
 
     window.addEventListener("pointermove", function (e) {
       mx = e.clientX;
       my = e.clientY;
+      if (!shown) {
+        shown = true;
+        rx = mx;
+        ry = my;
+        ring.classList.add("is-on");
+        dot.classList.add("is-on");
+      }
       var t = e.target;
       var hot =
         t &&
@@ -968,7 +994,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   }
 
   /* ---------------------------------------------------------- 图片灯箱 */
-  // [data-zoom] 点击放大；ESC / 点背景 / 点关闭按钮退出
+  // [data-zoom] 点击/回车放大；ESC / 点背景 / 点关闭按钮退出；打开时锁滚动
   function initLightbox(root) {
     var lb = document.getElementById("lb");
     if (!lb) return;
@@ -976,34 +1002,92 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     var cap = document.getElementById("lb-cap");
     var closeBtn = lb.querySelector("[data-lb-close]");
     var lastFocus = null;
+    var prevOverflow = "";
 
-    function open(src, text) {
-      lastFocus = document.activeElement;
-      if (img) img.src = src;
+    // 关闭态必须真正移出可访问性树：否则那个「关闭 ESC」按钮仍在 Tab 序列里，
+    // 键盘用户会停在一个看不见的按钮上。
+    lb.setAttribute("aria-hidden", "true");
+    if ("inert" in lb) lb.inert = true;
+
+    function focusables() {
+      return [].slice.call(
+        lb.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')
+      );
+    }
+
+    function open(src, text, trigger) {
+      lastFocus = trigger || document.activeElement;
+      if (img) {
+        img.src = src;
+        img.alt = text || "";
+      }
       if (cap) cap.textContent = text || "";
       lb.classList.add("is-on");
+      lb.setAttribute("aria-hidden", "false");
+      if ("inert" in lb) lb.inert = false;
+      prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden"; // 锁滚动：灯箱后面不该跟着滚
       if (closeBtn) closeBtn.focus();
     }
+
     function close() {
       lb.classList.remove("is-on");
-      if (lastFocus && lastFocus.focus) lastFocus.focus();
+      lb.setAttribute("aria-hidden", "true");
+      if ("inert" in lb) lb.inert = true;
+      document.body.style.overflow = prevOverflow;
+      // 归还焦点：优先还给触发它的那张图（现在它们都是可聚焦的）
+      if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
     }
 
-    root.addEventListener("click", function (e) {
+    function onClick(e) {
       var trigger = e.target.closest && e.target.closest("[data-zoom]");
-      if (trigger) {
+      if (trigger && !lb.classList.contains("is-on")) {
         e.preventDefault();
-        open(trigger.getAttribute("data-zoom"), trigger.getAttribute("data-cap"));
+        open(trigger.getAttribute("data-zoom"), trigger.getAttribute("data-cap"), trigger);
         return;
       }
-      if (lb.classList.contains("is-on") && e.target.closest && e.target.closest("#lb")) {
-        // 点背景或关闭按钮都退出
-        if (e.target === lb || e.target.closest("[data-lb-close]")) close();
+      if (lb.classList.contains("is-on")) {
+        if (e.target === lb || (e.target.closest && e.target.closest("[data-lb-close]"))) close();
       }
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && lb.classList.contains("is-on")) close();
-    });
+    }
+
+    function onKey(e) {
+      if (!lb.classList.contains("is-on")) {
+        // 关闭态下 Enter/空格 作用在可聚焦的图上 = 打开
+        if ((e.key === "Enter" || e.key === " ") && e.target.closest) {
+          var t = e.target.closest("[data-zoom]");
+          if (t) {
+            e.preventDefault();
+            open(t.getAttribute("data-zoom"), t.getAttribute("data-cap"), t);
+          }
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
+      // 焦点陷阱：Tab 只在灯箱内部循环
+      if (e.key === "Tab") {
+        var f = focusables();
+        if (!f.length) return;
+        var first = f[0];
+        var last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (!lb.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    root.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKey);
   }
 
   /* ------------------------------------------------------ 主循环（单 RAF） */
