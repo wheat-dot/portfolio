@@ -16,7 +16,7 @@
 *,*::before,*::after{box-sizing:border-box}
 :root{
   --paper:#EFEAE0; --paper-2:#E7E0D2; --paper-3:#F6F2EA;
-  --ink:#151310; --ink-2:#2B2722; --ink-3:#6B6156; --ink-4:#9A9184;
+  --ink:#151310; --ink-2:#2B2722; --ink-3:#6B6156; --ink-4:#665E52;
   --line:#D6CDBB; --line-2:#C3B7A0;
   --red:#B8362A; --red-2:#8F2A20;
   --ease:cubic-bezier(.22,1,.36,1);
@@ -152,7 +152,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   filter:blur(14px);transform:scale(1.045);
   transition:filter 1.15s var(--ease),transform 1.4s var(--ease);
 }
-.figure.is-in img{filter:blur(0);transform:scale(1)}
+/* 注意：画廊里 .figure 的父元素是 <figure class="gitem" data-rv>，
+   所以 .is-in 落在 .gitem 上而不是 .figure 上——两条选择器都要写，
+   否则图片会永远停在 blur(14px) 的半成品态。 */
+.figure.is-in img,.gitem.is-in .figure img{filter:blur(0);transform:scale(1)}
+.figure.is-in::after{transform:scaleY(0)}
+.gitem.is-in .figure[data-rv]::after{transform:scaleY(0)}
 /* 揭示遮罩只加在参与揭示的图上；没有 data-rv 的 figure 不该被盖住 */
 .figure[data-rv]::after{
   content:"";position:absolute;inset:0;background:var(--paper);
@@ -254,7 +259,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
   gap:clamp(20px,4vw,64px);align-items:center;
 }
-.feature .figure{aspect-ratio:16/9}
+.feature .figure{aspect-ratio:4/3;background:var(--paper-2)}
+.feature .figure img{width:100%;height:100%;object-fit:contain}
 .feature__t{font-family:var(--serif);font-size:clamp(28px,4vw,60px);line-height:1.08;margin:14px 0 16px;font-weight:400}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:1px;background:var(--line);border:var(--hair) solid var(--line);margin:24px 0 0}
 .metrics div{background:var(--paper);padding:14px}
@@ -399,9 +405,11 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* 灯箱 */
 .lb{position:fixed;inset:0;z-index:200;background:color-mix(in srgb,var(--paper) 97%,transparent);display:flex;align-items:center;justify-content:center;padding:4vh 4vw;opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
 .lb.is-on{opacity:1;pointer-events:auto}
-.lb img{max-width:100%;max-height:86vh;width:auto;object-fit:contain;box-shadow:0 24px 70px rgba(40,34,24,.22)}
+.lb img,.lb #lb-img{max-width:100%;max-height:86vh;width:auto;object-fit:contain;box-shadow:0 24px 70px rgba(40,34,24,.22);cursor:zoom-out}
 .lb__cap{position:absolute;left:0;right:0;bottom:2vh;text-align:center;font-size:12.5px;color:var(--ink-3)}
-.lb__x{position:absolute;top:18px;right:22px;font-size:11.5px;letter-spacing:.2em;color:var(--ink-3);text-transform:uppercase}
+.lb__x{position:absolute;top:18px;right:22px;font-size:11.5px;letter-spacing:.2em;color:var(--ink-3);text-transform:uppercase;cursor:pointer}
+.lb__x:hover{color:var(--red)}
+.has-cursor .lb{cursor:zoom-out}
 
 /* 粒子/装饰 */
 .rule{height:var(--hair);background:var(--line);transform-origin:0 50%}
@@ -615,10 +623,29 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
           io.unobserve(el);
         }
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.08 }
+      // rootMargin 先把视口下方 12% 也纳入；没有用 threshold ——
+      // clip-path 起始态会把元素自身的相交矩形压成 0 面积，
+      // 用 threshold > 0 会导致这类元素永远判为「未相交」而卡在隐藏态。
+      { rootMargin: "0px 0px -12% 0px" }
     );
 
+    // 兜底：观察器已经建立后，立刻把「已经在视口里」的元素直接放出来，
+    // 避免任何原因（布局延迟、元素自身尺寸为 0）导致的永久隐藏。
     for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+    requestAnimationFrame(function () {
+      var vh = window.innerHeight || 800;
+      for (var k = 0; k < nodes.length; k++) {
+        var el = nodes[k];
+        if (el.classList.contains("is-in")) continue;
+        var r = el.getBoundingClientRect();
+        if (r.top < vh * 0.88 && r.bottom > 0) {
+          var d = parseInt(el.getAttribute("data-rv-d") || "0", 10);
+          if (d > 0) el.style.transitionDelay = d + "ms";
+          el.classList.add("is-in");
+          io.unobserve(el);
+        }
+      }
+    });
   }
 
   /* ------------------------------------------------------- 字符/词级拆分 */
@@ -920,6 +947,45 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     }
   }
 
+  /* ---------------------------------------------------------- 图片灯箱 */
+  // [data-zoom] 点击放大；ESC / 点背景 / 点关闭按钮退出
+  function initLightbox(root) {
+    var lb = document.getElementById("lb");
+    if (!lb) return;
+    var img = document.getElementById("lb-img");
+    var cap = document.getElementById("lb-cap");
+    var closeBtn = lb.querySelector("[data-lb-close]");
+    var lastFocus = null;
+
+    function open(src, text) {
+      lastFocus = document.activeElement;
+      if (img) img.src = src;
+      if (cap) cap.textContent = text || "";
+      lb.classList.add("is-on");
+      if (closeBtn) closeBtn.focus();
+    }
+    function close() {
+      lb.classList.remove("is-on");
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    root.addEventListener("click", function (e) {
+      var trigger = e.target.closest && e.target.closest("[data-zoom]");
+      if (trigger) {
+        e.preventDefault();
+        open(trigger.getAttribute("data-zoom"), trigger.getAttribute("data-cap"));
+        return;
+      }
+      if (lb.classList.contains("is-on") && e.target.closest && e.target.closest("#lb")) {
+        // 点背景或关闭按钮都退出
+        if (e.target === lb || e.target.closest("[data-lb-close]")) close();
+      }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && lb.classList.contains("is-on")) close();
+    });
+  }
+
   /* ------------------------------------------------------ 主循环（单 RAF） */
   function loop() {
     if (magLoop) magLoop();
@@ -943,6 +1009,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
     headerEl = document.querySelector("[data-header]");
     barEl = progressEl;
     initCursor();
+    initLightbox(document);
     mount(document);
     updateScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
